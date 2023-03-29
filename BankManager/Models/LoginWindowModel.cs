@@ -31,7 +31,7 @@ public class LoginWindowModel
         };
     }
 
-    public void CloseCommandCenter()
+    public void CloseApplication()
     {
         Environment.Exit(0);
     }

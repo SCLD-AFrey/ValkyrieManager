@@ -33,7 +33,7 @@ public class LoginWindowViewModel
 
     public void ClickCloseCommandCenter()
     {
-        m_model.CloseCommandCenter();
+        m_model.CloseApplication();
     }
     
     public async Task ClickLogin(Window p_loginWindow)

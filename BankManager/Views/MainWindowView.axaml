@@ -3,6 +3,8 @@
         xmlns:viewModels="using:BankManager.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:converters="clr-namespace:BankManager.Views.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="BankManager.Views.MainWindowView"
         Icon="/Assets/avalonia-logo.ico"
@@ -12,7 +14,97 @@
         <!-- ReSharper disable once Xaml.ConstructorWarning -->
         <viewModels:MainWindowViewModel/>
     </Design.DataContext>
+    
+    
+    <Window.Resources>
+        <converters:LogEventLevelToImageConverter x:Key="LogEventLevelToImageConverter" />
+        <converters:LogEventLevelToColorConverter x:Key="LogEventLevelToColorConverter" />
+    </Window.Resources>
+    
+    <Window.Styles>
+        <Style Selector="ListBox.console">
+            <Setter Property="FontFamily" Value="Consolas"/>
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="10,4,10,2"/>
+        </Style>
+    </Window.Styles>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="200"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left side -->
+        
+        <StackPanel Grid.Column="0" Grid.Row="0" Margin="10">
+            <Button Content="Balances" Command="{Binding OpenBalancesViewCommand}"></Button>
+            <Button Content="Transactions" Command="{Binding OpenTransactionsViewCommand}"></Button>
+            <Button Content="Balances" Command="{Binding OpenBalancesViewCommand}"></Button>
+            <Button Content="Settings" Command="{Binding OpenSettingsViewCommand}"></Button>
+            <Button Content="Exit" Command="{Binding ExitCommand}"></Button>
+        </StackPanel>
+        
+        <!-- Right side -->
+        
+        <ContentControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding CurrentView}"></ContentControl>
+        
+        <!-- Bottom side -->
+
+        <ListBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Classes="console"
+                 AutoScrollToSelectedItem="True"
+                 SelectionMode="Multiple"
+                 SelectedItems="{Binding SelectedMessages}"
+                 Items="{Binding Messages}">
+            <ListBox.Background>
+                <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,7.5%">
+                    <GradientStop Color="#1f000000" Offset="0" />
+                    <GradientStop Offset="1" />
+                </LinearGradientBrush>
+            </ListBox.Background>
+            <ListBox.ContextFlyout>
+                <MenuFlyout>
+                    <MenuItem Header="Copy Message..."
+                              Command="{Binding CopyMessages}" />
+                </MenuFlyout>
+            </ListBox.ContextFlyout>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <avalonia:MaterialIcon Grid.Column="0" Margin="0, 0, 2, 0"
+                                               Width="18"
+                                               Height="{Binding $self.Bounds.Width}"
+                                               Kind="{Binding LogLevel, Converter={StaticResource LogEventLevelToImageConverter}}"
+                                               Foreground="{Binding LogLevel, Converter={StaticResource LogEventLevelToColorConverter}}" />
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"
+                                   Text="{Binding Text}" 
+                                   Foreground="{Binding LogLevel, Converter={StaticResource LogEventLevelToColorConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        <!-- Status Bar -->
+        
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2">
+            <Button Content="Logout"></Button>
+            <TextBlock Text="{Binding StatusUsername}"></TextBlock>
+        </StackPanel>
+        
+        
+        
+        
+        
+        
+    </Grid>
 
 </Window>

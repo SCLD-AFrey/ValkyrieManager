@@ -2,10 +2,13 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using BankManager.Models;
+using BankManager.Models.MainApplication;
 using BankManager.Services;
 using BankManager.Services.Database;
 using BankManager.ViewModels;
+using BankManager.ViewModels.MainApplication;
 using BankManager.Views;
+using BankManager.Views.MainApplication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -42,12 +45,29 @@ public partial class App : Application
         p_services.AddSingleton<DatabaseUtilities>();
         p_services.AddSingleton<DatabaseInit>();
         
+        p_services.AddSingleton<MainWindowModel>();
         p_services.AddSingleton<MainWindowView>();
         p_services.AddSingleton<MainWindowViewModel>();
         
         p_services.AddSingleton<LoginWindowModel>();
         p_services.AddSingleton<LoginWindowView>();
         p_services.AddSingleton<LoginWindowViewModel>();
+        
+        p_services.AddSingleton<HomeModel>();
+        p_services.AddSingleton<HomeView>();
+        p_services.AddSingleton<HomeViewModel>();
+        
+        p_services.AddSingleton<BalanceModel>();
+        p_services.AddSingleton<BalanceView>();
+        p_services.AddSingleton<BalanceViewModel>();
+        
+        p_services.AddSingleton<TransactionsModel>();
+        p_services.AddSingleton<TransactionsView>();
+        p_services.AddSingleton<TransactionsViewModel>();
+        
+        p_services.AddSingleton<SettingsModel>();
+        p_services.AddSingleton<SettingsView>();
+        p_services.AddSingleton<SettingsViewModel>();
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -57,9 +77,8 @@ public partial class App : Application
         var userService = m_appHost.Services.GetRequiredService<UserService>();
         fileService.CreateDirectories();
         fileService.InitSettingsFiles();
-        userService.Init();
         settingsService.LoadSettings();
-        
+        userService.Init();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

@@ -70,7 +70,11 @@ public class UserService
         {
             m_logger.LogDebug("User '{UserName}' successfully logged in", p_loginObject.UserName);
             CurrentUser = user;
-            m_settingsService.UserSettings.LastLogin = new UserInfo(user.Oid, user.UserName);
+            m_settingsService.UserSettings.LastLogin = new UserInfo()
+            {
+                Oid = user.Oid,
+                UserName = user.UserName
+            };
             m_settingsService.ClientSettings.AutoLogin = p_loginObject.RememberMe;
             m_settingsService.SaveSettings();
         }
