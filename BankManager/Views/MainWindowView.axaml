@@ -34,7 +34,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="200"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -54,7 +53,11 @@
         
         <!-- Right side -->
         
-        <ContentControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding CurrentView}"></ContentControl>
+        <TransitioningContentControl  Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding CurrentView}">
+            <TransitioningContentControl.PageTransition>
+                <CrossFade Duration="0:00:00.500"></CrossFade>
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
         
         <!-- Bottom side -->
 
@@ -73,8 +76,7 @@
             </ListBox.Background>
             <ListBox.ContextFlyout>
                 <MenuFlyout>
-                    <MenuItem Header="Copy Message..."
-                              Command="{Binding CopyMessages}" />
+                    <MenuItem Header="Copy Message..." Command="{Binding CopyMessages}" />
                 </MenuFlyout>
             </ListBox.ContextFlyout>
             <ListBox.ItemTemplate>
@@ -92,13 +94,6 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        
-        <!-- Status Bar -->
-        
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2">
-            <Button Content="Logout"></Button>
-            <TextBlock Text="{Binding StatusUsername}"></TextBlock>
-        </StackPanel>
         
         
         

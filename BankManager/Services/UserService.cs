@@ -16,18 +16,34 @@ public class UserService
     private readonly EncryptionService m_encryptionService;
     private readonly SettingsService m_settingsService;
     private readonly DatabaseInterface m_databaseInterface;
+    private readonly HistoryService m_historyService;
     
-    public UserService(ILogger<UserService> p_logger, FileService p_fileService, EncryptionService p_encryptionService, SettingsService p_settingsService, DatabaseInterface p_databaseInterface)
+    public UserService(ILogger<UserService> p_logger, FileService p_fileService, EncryptionService p_encryptionService, SettingsService p_settingsService, DatabaseInterface p_databaseInterface, HistoryService p_historyService)
     {
         m_logger = p_logger;
         m_fileService = p_fileService;
         m_encryptionService = p_encryptionService;
         m_settingsService = p_settingsService;
         m_databaseInterface = p_databaseInterface;
+        m_historyService = p_historyService;
         m_logger.LogDebug("Initializing UserService");
     }
 
-    public User? CurrentUser { get; set; } = null!;
+    private User? CurrentUser { get; set; } = null!;
+    
+    public void SetCurrentUser(UserInfo p_user)
+    {
+        m_logger.LogDebug("Setting current user to user '{NewCurrentUser}'", p_user.UserName);
+        CurrentUser = GetUserInfo(p_user.Oid);
+        m_settingsService.UserSettings.LastLogin = p_user;
+        m_settingsService.SaveUserSettings();
+        //m_historyService.AddUserHistory(CurrentUser, "Logged in");
+    }
+
+    public User? GetCurrentUser()
+    {
+        return CurrentUser;
+    }
     
     public void Init()
     {
@@ -38,17 +54,13 @@ public class UserService
         {
             m_logger.LogDebug("Auto-logging in as user '{LastLogin}'", m_settingsService.UserSettings.LastLogin);
             CurrentUser = GetUserInfo(m_settingsService.UserSettings.LastLogin.Oid);
+            //m_historyService.AddUserHistory(CurrentUser, "Auto-logged in");
         }
         else
         {
             m_logger.LogDebug("No auto-login");
             CurrentUser = null;
         }
-    }
-    public void SetCurrentUser(User p_user)
-    {
-        m_logger.LogDebug("Setting current user to user '{NewCurrentUser}'", p_user.UserName);
-        CurrentUser = p_user;
     }
     public User GetUserInfo(int p_oid)
     {
@@ -81,6 +93,7 @@ public class UserService
         else
         {
             m_logger.LogDebug("User '{UserName}' failed to log in", p_loginObject.UserName);
+            //m_historyService.AddUserHistory(user, "Failed Login");
             throw new InvalidLoginException($"User '{p_loginObject.UserName}' failed to log in");
         }
     }
@@ -96,5 +109,6 @@ public class UserService
             PassSalt = salt
         };
         uow.CommitChanges();
+        //m_historyService.AddUserHistory(root, "User Created Automatically");
     }
 }

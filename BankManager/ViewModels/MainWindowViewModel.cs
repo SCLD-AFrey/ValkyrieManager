@@ -2,13 +2,20 @@
 using System.Text;
 using System.Windows.Input;
 using Avalonia.Collections;
+using Avalonia.Controls;
 using BankManager.Models;
 using BankManager.Models.Loggins;
+using BankManager.Services;
 using BankManager.Views.MainApplication;
+using MessageBox.Avalonia.DTO;
+using MessageBox.Avalonia.Enums;
+using MessageBox.Avalonia.Models;
 using MessageBox.Avalonia.ViewModels.Commands;
 using Microsoft.Extensions.Logging;
 using ReactiveUI.Fody.Helpers;
 using TextCopy;
+using ValkyrieData.Banking;
+using MessageBoxAvaloniaEnums = MessageBox.Avalonia.Enums;
 
 namespace BankManager.ViewModels;
 
@@ -18,6 +25,7 @@ public class MainWindowViewModel : ViewModelBase
     private readonly ILogger<MainWindowViewModel> m_logger;
     private readonly IServiceProvider m_serviceProvider;
     private readonly MainWindowModel m_model;
+    private readonly UserService m_userService;
     
     
     public ICommand ExitCommand { get; set; }
@@ -32,11 +40,12 @@ public class MainWindowViewModel : ViewModelBase
     [Reactive] public string                          StatusUsername    { get; set; }
     
     
-    public MainWindowViewModel(ILogger<MainWindowViewModel> p_logger, MainWindowModel p_model, IServiceProvider p_serviceProvider)
+    public MainWindowViewModel(ILogger<MainWindowViewModel> p_logger, MainWindowModel p_model, IServiceProvider p_serviceProvider, UserService p_userService)
     {
         m_logger = p_logger;
         m_model = p_model;
         m_serviceProvider = p_serviceProvider;
+        m_userService = p_userService;
         m_logger.LogDebug("Initializing MainWindowViewModel");
 
         ExitCommand = new RelayCommand(Exit);
@@ -46,28 +55,60 @@ public class MainWindowViewModel : ViewModelBase
         OpenSettingsViewCommand = new RelayCommand(OpenSettingsView);
         
         CurrentView = m_serviceProvider.GetService(typeof(HomeView));
+
+        CollectionSink.SetCollection(Messages);
+        m_logger.LogInformation("Logged in as {UserName}", m_userService.GetCurrentUser()!.UserName);
     }
 
-    private void Exit(object p_obj)
+    private async void Exit(object p_obj)
     {
-        m_model.CloseApplication();
+        m_logger.LogInformation("Exiting Application");
+        var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(
+            new MessageBoxStandardParams
+            {
+                Icon = Icon.Question,
+                ButtonDefinitions = MessageBoxAvaloniaEnums.ButtonEnum.YesNoCancel,
+                ContentTitle = "Logout",
+                ContentHeader = "Would you like to log out of the application?",
+                ContentMessage = "Seriously, do you want to log out?"
+            });
+        var answer = await messageBoxStandardWindow.Show();
+
+        switch (answer)
+        {
+            case ButtonResult.Yes:
+                m_logger.LogInformation("User {UserName} logged out", m_userService.GetCurrentUser()!.UserName);
+                m_userService.SetCurrentUser(new UserInfo());
+                m_model.CloseApplication();
+                break;
+            case ButtonResult.No:
+                m_model.CloseApplication();
+                break;
+            case ButtonResult.Cancel:
+                m_logger.LogInformation("Exiting Application - Cancelled");
+                break;
+        }
     }
 
     
     private void OpenHomeView(object p_obj)
     {
+        m_logger.LogInformation("Opening HomeView");
         CurrentView = m_serviceProvider.GetService(typeof(HomeView));
     }
     private void OpenTransactionsView(object p_obj)
     {
+        m_logger.LogInformation("Opening TransactionsView");
         CurrentView = m_serviceProvider.GetService(typeof(TransactionsView));
     }
     private void OpenBalancesView(object p_obj)
     {
+        m_logger.LogInformation("Opening BalanceView");
         CurrentView = m_serviceProvider.GetService(typeof(BalanceView));
     }
     private void OpenSettingsView(object p_obj)
     {
+        m_logger.LogInformation("Opening SettingsView");
         CurrentView = m_serviceProvider.GetService(typeof(SettingsView));
     }
     

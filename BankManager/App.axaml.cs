@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using BankManager.Models;
+using BankManager.Models.Loggins;
 using BankManager.Models.MainApplication;
 using BankManager.Services;
 using BankManager.Services.Database;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
 
 namespace BankManager;
 
@@ -40,6 +43,7 @@ public partial class App : Application
         p_services.AddSingleton<SettingsService>();
         p_services.AddSingleton<EncryptionService>();
         p_services.AddSingleton<UserService>();
+        p_services.AddSingleton<HistoryService>();
         
         p_services.AddSingleton<DatabaseInterface>();
         p_services.AddSingleton<DatabaseUtilities>();
@@ -79,10 +83,17 @@ public partial class App : Application
         fileService.InitSettingsFiles();
         settingsService.LoadSettings();
         userService.Init();
+        
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Is(LogEventLevel.Verbose)
+            .WriteTo.Sink(new CollectionSink())
+            .WriteTo.File(new JsonFormatter(), fileService.LogsFile, retainedFileCountLimit:31)
+            .CreateLogger();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = (userService.CurrentUser != null)
+            var user = userService.GetCurrentUser();
+            desktop.MainWindow = (user != null && user.Oid > 0)
                 ? m_appHost.Services.GetRequiredService<MainWindowView>()
                 : m_appHost.Services.GetRequiredService<LoginWindowView>();
         }
