@@ -64,8 +64,7 @@ public class FilesService
             string jsonString = "[]";
             string encryptedJson = m_encryptionService.EncryptString(jsonString);
             File.WriteAllText(ClientSettingsFilePath, encryptedJson);
-        }
-            
+        
         if(!File.Exists(UserSettingsFilePath))
         {
             m_logger.LogInformation("Create Necessary Files... {Filepath}", UserSettingsFilePath);
@@ -73,7 +72,6 @@ public class FilesService
             string encryptedJson = m_encryptionService.EncryptString(jsonString);
             File.WriteAllText(UserSettingsFilePath, encryptedJson);
         }
-        
     }
 
     private string SolutionDataFolderName { get; set; }

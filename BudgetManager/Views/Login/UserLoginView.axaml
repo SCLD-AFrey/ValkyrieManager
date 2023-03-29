@@ -135,26 +135,27 @@
         </Grid>
         <Grid Margin="12" RowDefinitions="Auto,*,Auto,10">
             <StackPanel Grid.Row="1" Orientation="Vertical" x:Name="ValidationContainer">
-                <Grid
-                    Margin="10" RowDefinitions="Auto,5,Auto,5,Auto,5,Auto" ColumnDefinitions="Auto,5,*">
-                    <TextBlock Grid.Row="2" Grid.Column="0">User Name:</TextBlock>
-                    <TextBlock Grid.Row="4" Grid.Column="0">Password:</TextBlock>
+                <Grid Margin="10" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,Auto">
 
 
+                    <TextBlock Grid.Row="0" Grid.Column="0">User Name:</TextBlock>
                     <!-- ReSharper disable once Xaml.StyleClassNotFound -->
-                    <TextBox TabIndex="1" Classes="clearButton validationError"
-                             x:Name="UserName"
-                             Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center"
-                             Text="{Binding UserName}" MaxLength="50">
+                    <TextBox TabIndex="1" Classes="clearButton"
+                             x:Name="Username"
+                             Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
+                             Text="{Binding Username}" MaxLength="50">
                         <TextBox.IsEnabled>
                             <MultiBinding Converter="{x:Static BoolConverters.And}">
                                 <Binding Path="!IsBusy"></Binding>
                             </MultiBinding>
                         </TextBox.IsEnabled>
                     </TextBox>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="1">Password:</TextBlock>
+
                     <!-- ReSharper disable once Xaml.StyleClassNotFound -->
-                    <TextBox TabIndex="4" Classes="revealPasswordButton validationError" PasswordChar="•" 
-                             Grid.Row="6" Grid.Column="2" x:Name="UserPassword"
+                    <TextBox TabIndex="4" Classes="revealPasswordButton" PasswordChar="•" 
+                             Grid.Row="1" Grid.Column="1" x:Name="UserPassword"
                              VerticalContentAlignment="Center" MaxLength="255"
                              Text="{Binding UserPassword}">
                         <TextBox.IsEnabled>

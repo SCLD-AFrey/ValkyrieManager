@@ -35,7 +35,7 @@ public class AuthenticationService
         }
         
         using var unitOfWork = m_databaseInterface.ProvisionUnitOfWork();
-        var user = unitOfWork.Query<User>().FirstOrDefault(x => string.Equals(x.Username, p_loginObject.Username, StringComparison.CurrentCultureIgnoreCase));
+        var user = unitOfWork.Query<User>().FirstOrDefault(p_x => string.Equals(p_x.Username, p_loginObject.Username, StringComparison.CurrentCultureIgnoreCase));
         if (user == null)
         {
             throw new Exception("Username does not exist");

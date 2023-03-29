@@ -1,0 +1,65 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:BankManager.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="BankManager.Views.LoginWindowView"
+        Title="LoginWindowView">
+
+    <Design.DataContext>
+        <!-- ReSharper disable once Xaml.ConstructorWarning -->
+        <viewModels:LoginWindowViewModel/>
+    </Design.DataContext>
+    
+    <Window.Styles>
+        <Style Selector="TextBox">
+            <Setter Property="Width" Value="150"></Setter>
+        </Style>
+    </Window.Styles>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding HeaderTitle}" />
+        
+        <!-- Username -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Username:" />
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding UserName}" />
+        
+        <!-- Password -->
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Password:" />
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Password}" />
+        
+        <!-- Remember Me -->
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <CheckBox IsChecked="{Binding RememberMe}"></CheckBox>
+            <TextBlock Text="Remember Me" />
+        </StackPanel>
+        
+        <!-- Submit -->
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <Button Content="Login" Command="{ReflectionBinding ClickLogin}"
+                    CommandParameter="{ReflectionBinding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+            <Button Command="{ReflectionBinding ClickCloseCommandCenter}">Close</Button>
+        </StackPanel>
+        
+        <!-- ValidationMessage -->
+        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding ValidationMessage}" />
+        
+    </Grid>
+    
+</Window>
