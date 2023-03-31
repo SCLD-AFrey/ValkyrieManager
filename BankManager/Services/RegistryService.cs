@@ -15,7 +15,7 @@ public class RegistryService
         m_logger = p_logger;
         if (string.IsNullOrEmpty(AesKey))
         {
-            InitAesKey();
+            LoadAesKey();
         }
     }
 

@@ -47,8 +47,8 @@ public class SettingsService
     {
         m_logger.LogInformation("Save User Settings... {Filepath}", m_fileService.UserSettingsFile);
         var jsonString = JsonSerializer.Serialize(UserSettings);
-        var encryptedJson = m_encryptionService.EncryptString(jsonString);
-        await File.WriteAllTextAsync(m_fileService.UserSettingsFile, encryptedJson);
+        //jsonString = m_encryptionService.EncryptString(jsonString);
+        await File.WriteAllTextAsync(m_fileService.UserSettingsFile, jsonString);
     }
 
     private async Task LoadClientSettings()
@@ -62,7 +62,7 @@ public class SettingsService
     {
         using StreamReader rdr = new(m_fileService.UserSettingsFile);
         var json = await rdr.ReadToEndAsync();
-        var decryptedJson = m_encryptionService.DecryptString(json);
-        UserSettings = JsonSerializer.Deserialize<UserSettings>(decryptedJson)!;
+        //json = m_encryptionService.DecryptString(json);
+        UserSettings = JsonSerializer.Deserialize<UserSettings>(json)!;
     }
 }

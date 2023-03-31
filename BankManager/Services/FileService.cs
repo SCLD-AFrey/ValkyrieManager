@@ -79,8 +79,8 @@ public class FileService
             var settings = new UserSettings();
             m_logger.LogInformation("Create Necessary Files... {Filepath}", UserSettingsFile);
             string jsonString = JsonSerializer.Serialize(settings);;
-            string encryptedJson = m_encryptionService.EncryptString(jsonString);
-            File.WriteAllText(UserSettingsFile, encryptedJson);
+            //jsonString = m_encryptionService.EncryptString(jsonString);
+            File.WriteAllText(UserSettingsFile, jsonString);
         }
     }
 }
