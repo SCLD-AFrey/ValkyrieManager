@@ -9,7 +9,7 @@ namespace BankManager.Models.Loggins;
 
 public class CollectionSink : ILogEventSink
 {
-    private readonly ITextFormatter _textFormatter =
+    private readonly ITextFormatter m_textFormatter =
         new MessageTemplateTextFormatter("{Timestamp:HH:mm:ss} - {Message}{Exception}");
 
     public static AvaloniaList<ConsoleLogMessage> Events { get; set; } = new();
@@ -17,7 +17,7 @@ public class CollectionSink : ILogEventSink
     public void Emit(LogEvent p_logEvent)
     {
         var renderer = new StringWriter();
-        _textFormatter.Format(p_logEvent, renderer);
+        m_textFormatter.Format(p_logEvent, renderer);
 
         var message = new ConsoleLogMessage
         {

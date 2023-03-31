@@ -1,7 +1,6 @@
 ﻿using System.IO;
+using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using BankManager.Models;
 using BankManager.Models.Settings;
 using Microsoft.Extensions.Logging;
 
@@ -9,8 +8,8 @@ namespace BankManager.Services;
 
 public class FileService
 {
-    private const string c_solutionDataFolderName = ".ValkyrieManager";
-    private const string c_appDataFolderName = "BankManager";
+    private const string CSolutionDataFolderName = ".ValkyrieManager";
+    private const string CAppDataFolderName = "BankManager";
     private readonly ILogger<FileService> m_logger;
     private readonly EncryptionService m_encryptionService;
     
@@ -20,6 +19,7 @@ public class FileService
     public string UserSettingsFile { get; }
     public string LogsFile { get; }
     public string DatabaseFile { get; }
+    public string AesKeyFile { get; }
     
     
 
@@ -29,13 +29,13 @@ public class FileService
         m_encryptionService = p_encryptionService;
         
         SolutionRoot = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData),
-            c_solutionDataFolderName);
+            CSolutionDataFolderName);
         
-        ApplicationRoot = Path.Combine(SolutionRoot, c_appDataFolderName);
+        ApplicationRoot = Path.Combine(SolutionRoot, CAppDataFolderName);
         
         ClientSettingsFile = Path.Combine(ApplicationRoot, "settings.ini");
-        UserSettingsFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData),
-            c_appDataFolderName, "user-settings.enc");
+        UserSettingsFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), CAppDataFolderName, "user-settings.enc");
+        AesKeyFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), CAppDataFolderName, "aes");
         LogsFile = Path.Combine(ApplicationRoot, "logs", "events.log");
         DatabaseFile = Path.Combine(ApplicationRoot, "data", "bankmanager.db");
         
@@ -54,6 +54,8 @@ public class FileService
         Directory.CreateDirectory(Path.GetDirectoryName(ClientSettingsFile)!);
         m_logger.LogInformation("Creating UserSettingsFile... {UserSettingsFile}", UserSettingsFile);
         Directory.CreateDirectory(Path.GetDirectoryName(UserSettingsFile)!);
+        m_logger.LogInformation("Creating AesKeyFile... {AesKeyFile}", AesKeyFile);
+        Directory.CreateDirectory(Path.GetDirectoryName(AesKeyFile)!);
         m_logger.LogInformation("Creating LogsFile... {LogsFile}", LogsFile);
         Directory.CreateDirectory(Path.GetDirectoryName(LogsFile)!);
         m_logger.LogInformation("Creating DatabaseFile... {DatabaseFile}", DatabaseFile);
@@ -75,13 +77,10 @@ public class FileService
         if(!File.Exists(UserSettingsFile))
         {
             var settings = new UserSettings();
-            settings.AesKey = EncryptionService.GenerateAesKey();
-            
-            
             m_logger.LogInformation("Create Necessary Files... {Filepath}", UserSettingsFile);
-            string jsonString = JsonSerializer.Serialize(new UserSettings());;
-            //string encryptedJson = m_encryptionService.EncryptString(jsonString);
-            File.WriteAllText(UserSettingsFile, jsonString);
+            string jsonString = JsonSerializer.Serialize(settings);;
+            string encryptedJson = m_encryptionService.EncryptString(jsonString);
+            File.WriteAllText(UserSettingsFile, encryptedJson);
         }
     }
 }

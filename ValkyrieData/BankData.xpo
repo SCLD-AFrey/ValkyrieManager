@@ -66,13 +66,13 @@
             <field Id="d4b67e94-e352-4382-bbae-83a2363b3646" name="Title" virtualColumnType="String" delayedUpdateModifiedOnly="false" />
           </generalXpObjectHasFields>
           <generalXpObjectHasFields Id="ba9db237-127e-4ddc-9b7f-f71497445e11">
-            <field Id="0c0c15fe-ec0c-4675-948e-d51da0f314dd" name="IsWithdrawal" virtualColumnType="String" delayedUpdateModifiedOnly="false" />
+            <field Id="0c0c15fe-ec0c-4675-948e-d51da0f314dd" name="IsWithdrawal" columnType="Boolean" virtualColumnType="Boolean" delayedUpdateModifiedOnly="false" defaultValue="Boolean#False" />
           </generalXpObjectHasFields>
           <generalXpObjectHasFields Id="2a6991f6-eab3-4cff-a3de-a387b2aa1158">
-            <field Id="5ce3f0b1-df06-4adf-9c94-8e668031b098" name="IsDeposit" virtualColumnType="String" delayedUpdateModifiedOnly="false" />
+            <field Id="5ce3f0b1-df06-4adf-9c94-8e668031b098" name="IsDeposit" columnType="Boolean" virtualColumnType="Boolean" delayedUpdateModifiedOnly="false" defaultValue="Boolean#False" />
           </generalXpObjectHasFields>
           <generalXpObjectHasFields Id="d696ed6d-dff9-4f49-b8b0-2d8640358cbd">
-            <field Id="39655984-fdd1-481b-8d78-861358f89b0a" name="IsLocked" virtualColumnType="String" delayedUpdateModifiedOnly="false" />
+            <field Id="39655984-fdd1-481b-8d78-861358f89b0a" name="IsLocked" columnType="Boolean" virtualColumnType="Boolean" delayedUpdateModifiedOnly="false" defaultValue="Boolean#False" />
           </generalXpObjectHasFields>
         </fields>
         <saTargets>

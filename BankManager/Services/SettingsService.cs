@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using BankManager.Models;
 using BankManager.Models.Settings;
 using Microsoft.Extensions.Logging;
 
@@ -28,43 +26,43 @@ public class SettingsService
     public async void LoadSettings()
     {
         m_logger.LogInformation("Loading settings...");
-        LoadClientSettings();
-        LoadUserSettings();
+        await LoadClientSettings();
+        await LoadUserSettings();
     }
 
-    public async void SaveSettings()
+    public async Task SaveSettings()
     {
         m_logger.LogInformation("Saving settings...");
-        SaveClientSettings();
-        SaveUserSettings();
+        await SaveClientSettings();
+        await SaveUserSettings();
     }
 
-    public async void SaveClientSettings()
+    private async Task SaveClientSettings()
     {
         m_logger.LogInformation("Save Client Settings... {Filepath}", m_fileService.ClientSettingsFile);
         var jsonString = JsonSerializer.Serialize(ClientSettings);
-        File.WriteAllText(m_fileService.ClientSettingsFile, jsonString);
+        await File.WriteAllTextAsync(m_fileService.ClientSettingsFile, jsonString);
     }
-    public async void SaveUserSettings()
+    private async Task SaveUserSettings()
     {
         m_logger.LogInformation("Save User Settings... {Filepath}", m_fileService.UserSettingsFile);
         var jsonString = JsonSerializer.Serialize(UserSettings);
-        //var encryptedJson = m_encryptionService.EncryptString(jsonString);
-        File.WriteAllText(m_fileService.UserSettingsFile, jsonString);
+        var encryptedJson = m_encryptionService.EncryptString(jsonString);
+        await File.WriteAllTextAsync(m_fileService.UserSettingsFile, encryptedJson);
     }
 
-    public async void LoadClientSettings()
+    private async Task LoadClientSettings()
     {
         using StreamReader rdr = new(m_fileService.ClientSettingsFile);
-        var json = rdr.ReadToEnd();
+        var json = await rdr.ReadToEndAsync();
         ClientSettings = JsonSerializer.Deserialize<ClientSettings>(json)!;
     }
 
-    public async void LoadUserSettings()
+    private async Task LoadUserSettings()
     {
         using StreamReader rdr = new(m_fileService.UserSettingsFile);
-        var json = rdr.ReadToEnd();
-        //var decryptedJson = m_encryptionService.DecryptString(json);
-        UserSettings = JsonSerializer.Deserialize<UserSettings>(json)!;
+        var json = await rdr.ReadToEndAsync();
+        var decryptedJson = m_encryptionService.DecryptString(json);
+        UserSettings = JsonSerializer.Deserialize<UserSettings>(decryptedJson)!;
     }
 }

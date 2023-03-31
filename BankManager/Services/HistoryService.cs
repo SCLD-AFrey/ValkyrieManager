@@ -1,7 +1,6 @@
 ﻿using System;
 using BankManager.Services.Database;
 using DevExpress.Xpo;
-using DevExpress.Xpo.Logger;
 using Microsoft.Extensions.Logging;
 using ValkyrieData.Banking;
 

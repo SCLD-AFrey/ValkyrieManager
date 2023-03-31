@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using BankManager.Models;
 using BankManager.Views;
-using DidiSoft.OpenSsl.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactiveUI.Fody.Helpers;

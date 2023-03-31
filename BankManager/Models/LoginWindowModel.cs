@@ -9,13 +9,11 @@ public class LoginWindowModel
 {
     private readonly ILogger<LoginWindowModel>          m_logger;
     private readonly UserService                       m_userService;
-    private readonly SettingsService              m_settingsService;
 
 
-    public LoginWindowModel(ILogger<LoginWindowModel> p_logger, SettingsService p_settingsService, UserService p_userService)
+    public LoginWindowModel(ILogger<LoginWindowModel> p_logger, UserService p_userService)
     {
         m_logger = p_logger;
-        m_settingsService = p_settingsService;
         m_userService = p_userService;
         m_logger.LogDebug("Initializing LoginWindowModel");
     }
@@ -38,6 +36,7 @@ public class LoginWindowModel
 
     public async Task AttemptLogin(string p_userName, string p_password, bool p_rememberMe)
     {
+        m_logger.LogDebug("AttemptLogin");
         await m_userService.AttemptLoginAsync(new LoginObject()
         {
             UserName = p_userName,

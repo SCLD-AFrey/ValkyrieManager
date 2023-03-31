@@ -8,17 +8,10 @@ namespace BankManager.Services;
 
 public class EncryptionService
 {
-    private const string AesKey = "WclB+A+rPKHOwW0BZQlpXica0cmj6pRPe+0YTgp5hmE=";
+    public string AesKey { get; set; }// = "WclB+A+rPKHOwW0BZQlpXica0cmj6pRPe+0YTgp5hmE=";
     private const int KeySize = 64;
     private const int Iterations = 350000;
     private readonly HashAlgorithmName m_hashAlgorithm = HashAlgorithmName.SHA512;
-    
-    public static string GenerateAesKey()
-    {
-        using var aes = Aes.Create();
-        return Convert.ToBase64String(aes.Key);
-    }
-
     public string GeneratePasswordHash(string p_password, out byte[] p_salt)
     {
         p_salt = RandomNumberGenerator.GetBytes(KeySize);
@@ -36,25 +29,25 @@ public class EncryptionService
         var hashToCompare = Rfc2898DeriveBytes.Pbkdf2(p_password, p_salt, Iterations, m_hashAlgorithm, KeySize);
         return hashToCompare.SequenceEqual(Convert.FromHexString(p_hash));
     }
-    public string EncryptString(string plainText)
+    public string EncryptString(string p_plainText)
     {
         byte[] iv = new byte[16];
         byte[] array;
 
         using (Aes aes = Aes.Create())
         {
-            aes.Key = Convert.FromBase64String("WclB+A+rPKHOwW0BZQlpXica0cmj6pRPe+0YTgp5hmE=");
+            aes.Key = Convert.FromBase64String(AesKey);
             aes.IV = iv;
 
             ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                 {
-                    using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+                    using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
                     {
-                        streamWriter.Write(plainText);
+                        streamWriter.Write(p_plainText);
                     }
 
                     array = memoryStream.ToArray();
@@ -65,22 +58,22 @@ public class EncryptionService
         return Convert.ToBase64String(array);
     }
 
-    public string DecryptString(string cipherText)
+    public string DecryptString(string p_cipherText)
     {
         byte[] iv = new byte[16];
-        byte[] buffer = Convert.FromBase64String(cipherText);
+        byte[] buffer = Convert.FromBase64String(p_cipherText);
 
         using (Aes aes = Aes.Create())
         {
-            aes.Key = Convert.FromBase64String("WclB+A+rPKHOwW0BZQlpXica0cmj6pRPe+0YTgp5hmE=");
+            aes.Key = Convert.FromBase64String(AesKey);
             aes.IV = iv;
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
             using (var memoryStream = new MemoryStream(buffer))
             {
-                using (var cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
                 {
-                    using (var streamReader = new StreamReader((Stream)cryptoStream))
+                    using (var streamReader = new StreamReader(cryptoStream))
                     {
                         return streamReader.ReadToEnd();
                     }

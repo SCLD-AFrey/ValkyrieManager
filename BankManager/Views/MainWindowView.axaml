@@ -19,15 +19,32 @@
     <Window.Resources>
         <converters:LogEventLevelToImageConverter x:Key="LogEventLevelToImageConverter" />
         <converters:LogEventLevelToColorConverter x:Key="LogEventLevelToColorConverter" />
+        
     </Window.Resources>
     
     <Window.Styles>
         <Style Selector="ListBox.console">
             <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="Foreground" Value="#FFFFFF"></Setter>
         </Style>
         <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="10,4,10,2"/>
         </Style>
+
+        <Style Selector="Button.LeftNav">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Background" Value="#346eeb"/>
+            <Setter Property="Width" Value="100" />
+            <Setter Property="Height" Value="80" />
+            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+        </Style>
+        <Style Selector="Button.Exit">
+            <Setter Property="Height" Value="50" />
+            <Setter Property="Background" Value="#eb4034"/>
+        </Style>
+        
+        
     </Window.Styles>
 
     <Grid>
@@ -37,27 +54,30 @@
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"></ColumnDefinition>
+            <ColumnDefinition Width="125"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         
         <!-- Left side -->
         
         <StackPanel Grid.Column="0" Grid.Row="0" Margin="10">
-            <Button Content="Balances" Command="{Binding OpenBalancesViewCommand}"></Button>
-            <Button Content="Transactions" Command="{Binding OpenTransactionsViewCommand}"></Button>
-            <Button Content="Balances" Command="{Binding OpenBalancesViewCommand}"></Button>
-            <Button Content="Settings" Command="{Binding OpenSettingsViewCommand}"></Button>
-            <Button Content="Exit" Command="{Binding ExitCommand}"></Button>
+            <Button Classes="LeftNav" Content="Home" Command="{Binding OpenHomeViewCommand}"></Button>
+            <Button Classes="LeftNav" Content="Transactions" Command="{Binding OpenTransactionsViewCommand}"></Button>
+            <Button Classes="LeftNav" Content="Balances" Command="{Binding OpenBalancesViewCommand}"></Button>
+            <Button Classes="LeftNav" Content="Settings" Command="{Binding OpenSettingsViewCommand}"></Button>
+            <Separator Height="10" Background="Transparent"/>
+            <Button Classes="LeftNav Exit" Content="Exit" Command="{Binding ExitCommand}"></Button>
         </StackPanel>
         
         <!-- Right side -->
         
-        <TransitioningContentControl  Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding CurrentView}">
-            <TransitioningContentControl.PageTransition>
-                <CrossFade Duration="0:00:00.500"></CrossFade>
-            </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
+        <ContentControl  Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding CurrentView}">
+            <ContentControl.Styles>
+                <Style Selector="ContentControl">
+                    <Setter Property="Background" Value="#1f000000"></Setter>
+                </Style>
+            </ContentControl.Styles>
+        </ContentControl>
         
         <!-- Bottom side -->
 

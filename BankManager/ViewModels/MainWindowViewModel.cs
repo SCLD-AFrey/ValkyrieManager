@@ -2,19 +2,16 @@
 using System.Text;
 using System.Windows.Input;
 using Avalonia.Collections;
-using Avalonia.Controls;
 using BankManager.Models;
 using BankManager.Models.Loggins;
 using BankManager.Services;
 using BankManager.Views.MainApplication;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia.Models;
 using MessageBox.Avalonia.ViewModels.Commands;
 using Microsoft.Extensions.Logging;
 using ReactiveUI.Fody.Helpers;
 using TextCopy;
-using ValkyrieData.Banking;
 using MessageBoxAvaloniaEnums = MessageBox.Avalonia.Enums;
 
 namespace BankManager.ViewModels;

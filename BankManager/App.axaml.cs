@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -39,6 +40,7 @@ public partial class App : Application
     }
     private void ConfigureServices(IServiceCollection p_services)
     {
+        p_services.AddSingleton<RegistryService>();
         p_services.AddSingleton<FileService>();
         p_services.AddSingleton<SettingsService>();
         p_services.AddSingleton<EncryptionService>();
@@ -74,15 +76,23 @@ public partial class App : Application
         p_services.AddSingleton<SettingsViewModel>();
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
+        var registryService = m_appHost.Services.GetRequiredService<RegistryService>();
+        registryService.LoadAesKey();
         var fileService = m_appHost.Services.GetRequiredService<FileService>();
         var settingsService = m_appHost.Services.GetRequiredService<SettingsService>();
         var userService = m_appHost.Services.GetRequiredService<UserService>();
+        var dataInit = m_appHost.Services.GetRequiredService<DatabaseInit>();
+        var encService = m_appHost.Services.GetRequiredService<EncryptionService>();
+
+        encService.AesKey = registryService.AesKey;
+        
         fileService.CreateDirectories();
         fileService.InitSettingsFiles();
         settingsService.LoadSettings();
         userService.Init();
+        dataInit.Init();
         
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Is(LogEventLevel.Verbose)

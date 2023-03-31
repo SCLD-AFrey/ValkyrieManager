@@ -7,9 +7,9 @@ namespace BankManager;
 
 public class ViewLocator : IDataTemplate
 {
-    public IControl Build(object data)
+    public IControl Build(object p_data)
     {
-        var name = data.GetType().FullName!.Replace("ViewModel", "View");
+        var name = p_data.GetType().FullName!.Replace("ViewModel", "View");
         var type = Type.GetType(name);
 
         if (type != null)
@@ -20,8 +20,8 @@ public class ViewLocator : IDataTemplate
         return new TextBlock { Text = "Not Found: " + name };
     }
 
-    public bool Match(object data)
+    public bool Match(object p_data)
     {
-        return data is ViewModelBase;
+        return p_data is ViewModelBase;
     }
 }

@@ -12,31 +12,27 @@ namespace BankManager.Services;
 public class UserService
 {
     private readonly ILogger<UserService> m_logger;
-    private readonly FileService m_fileService;
     private readonly EncryptionService m_encryptionService;
     private readonly SettingsService m_settingsService;
     private readonly DatabaseInterface m_databaseInterface;
-    private readonly HistoryService m_historyService;
     
-    public UserService(ILogger<UserService> p_logger, FileService p_fileService, EncryptionService p_encryptionService, SettingsService p_settingsService, DatabaseInterface p_databaseInterface, HistoryService p_historyService)
+    public UserService(ILogger<UserService> p_logger, EncryptionService p_encryptionService, SettingsService p_settingsService, DatabaseInterface p_databaseInterface)
     {
         m_logger = p_logger;
-        m_fileService = p_fileService;
         m_encryptionService = p_encryptionService;
         m_settingsService = p_settingsService;
         m_databaseInterface = p_databaseInterface;
-        m_historyService = p_historyService;
         m_logger.LogDebug("Initializing UserService");
     }
 
-    private User? CurrentUser { get; set; } = null!;
+    private User? CurrentUser { get; set; }
     
-    public void SetCurrentUser(UserInfo p_user)
+    public async Task SetCurrentUser(UserInfo p_user)
     {
         m_logger.LogDebug("Setting current user to user '{NewCurrentUser}'", p_user.UserName);
         CurrentUser = GetUserInfo(p_user.Oid);
         m_settingsService.UserSettings.LastLogin = p_user;
-        m_settingsService.SaveUserSettings();
+        await m_settingsService.SaveSettings();
         //m_historyService.AddUserHistory(CurrentUser, "Logged in");
     }
 
@@ -52,7 +48,7 @@ public class UserService
         if(rootUser == null) CreateRootUser();
         if (m_settingsService.ClientSettings.AutoLogin && m_settingsService.UserSettings.LastLogin != null)
         {
-            m_logger.LogDebug("Auto-logging in as user '{LastLogin}'", m_settingsService.UserSettings.LastLogin);
+            m_logger.LogDebug("Auto-logging in as user '{@LastLogin}'", m_settingsService.UserSettings.LastLogin);
             CurrentUser = GetUserInfo(m_settingsService.UserSettings.LastLogin.Oid);
             //m_historyService.AddUserHistory(CurrentUser, "Auto-logged in");
         }
@@ -62,7 +58,8 @@ public class UserService
             CurrentUser = null;
         }
     }
-    public User GetUserInfo(int p_oid)
+
+    private User GetUserInfo(int p_oid)
     {
         var uow = m_databaseInterface.ProvisionUnitOfWork();
         return uow.GetObjectByKey<User>(p_oid);
@@ -88,7 +85,7 @@ public class UserService
                 UserName = user.UserName
             };
             m_settingsService.ClientSettings.AutoLogin = p_loginObject.RememberMe;
-            m_settingsService.SaveSettings();
+            await m_settingsService.SaveSettings();
         }
         else
         {
@@ -101,6 +98,7 @@ public class UserService
     private void CreateRootUser()
     {
         UnitOfWork uow = m_databaseInterface.ProvisionUnitOfWork();
+        // ReSharper disable once UnusedVariable
         var root = new User(uow)
         {
             IsRoot = true,

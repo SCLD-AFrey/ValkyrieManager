@@ -24,23 +24,26 @@ namespace ValkyrieData.Banking
             get { return fTitle; }
             set { SetPropertyValue<string>(nameof(Title), ref fTitle, value); }
         }
-        string fIsWithdrawal;
-        public string IsWithdrawal
+        bool fIsWithdrawal;
+        [ColumnDefaultValue(false)]
+        public bool IsWithdrawal
         {
             get { return fIsWithdrawal; }
-            set { SetPropertyValue<string>(nameof(IsWithdrawal), ref fIsWithdrawal, value); }
+            set { SetPropertyValue<bool>(nameof(IsWithdrawal), ref fIsWithdrawal, value); }
         }
-        string fIsDeposit;
-        public string IsDeposit
+        bool fIsDeposit;
+        [ColumnDefaultValue(false)]
+        public bool IsDeposit
         {
             get { return fIsDeposit; }
-            set { SetPropertyValue<string>(nameof(IsDeposit), ref fIsDeposit, value); }
+            set { SetPropertyValue<bool>(nameof(IsDeposit), ref fIsDeposit, value); }
         }
-        string fIsLocked;
-        public string IsLocked
+        bool fIsLocked;
+        [ColumnDefaultValue(false)]
+        public bool IsLocked
         {
             get { return fIsLocked; }
-            set { SetPropertyValue<string>(nameof(IsLocked), ref fIsLocked, value); }
+            set { SetPropertyValue<bool>(nameof(IsLocked), ref fIsLocked, value); }
         }
         [Association(@"TransactionReferencesTransactionCategory")]
         public XPCollection<Transaction> Transactions { get { return GetCollection<Transaction>(nameof(Transactions)); } }

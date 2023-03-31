@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:mainApplication="clr-namespace:BankManager.ViewModels.MainApplication"
+             xmlns:commonControls="clr-namespace:BankManager.Views.CommonControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BankManager.Views.MainApplication.SettingsView">
 
@@ -10,5 +11,8 @@
         <!-- ReSharper disable once Xaml.ConstructorWarning -->
         <mainApplication:SettingsViewModel/>
     </Design.DataContext>
-    SettingsView
+    
+    <StackPanel Orientation="Vertical">
+        <commonControls:PageHeader HeaderText="{Binding PageHeaderText}" />
+    </StackPanel>
 </UserControl>
