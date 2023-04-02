@@ -23,7 +23,7 @@ public class SettingsService
         m_logger.LogInformation("SettingsService initialized");
     }
     
-    public async void LoadSettings()
+    public async Task LoadSettings()
     {
         m_logger.LogInformation("Loading settings...");
         await LoadClientSettings();
@@ -53,6 +53,7 @@ public class SettingsService
 
     private async Task LoadClientSettings()
     {
+        m_logger.LogInformation("Load Client Settings...{Filepath}", m_fileService.ClientSettingsFile);
         using StreamReader rdr = new(m_fileService.ClientSettingsFile);
         var json = await rdr.ReadToEndAsync();
         ClientSettings = JsonSerializer.Deserialize<ClientSettings>(json)!;
@@ -60,6 +61,7 @@ public class SettingsService
 
     private async Task LoadUserSettings()
     {
+        m_logger.LogInformation("Load User Settings...{Filepath}", m_fileService.UserSettingsFile);
         using StreamReader rdr = new(m_fileService.UserSettingsFile);
         var json = await rdr.ReadToEndAsync();
         //json = m_encryptionService.DecryptString(json);

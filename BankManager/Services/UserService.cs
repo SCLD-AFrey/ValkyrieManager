@@ -38,19 +38,18 @@ public class UserService
 
     public User? GetCurrentUser()
     {
+        m_logger.LogDebug("Getting current user");
         return CurrentUser;
     }
     
-    public void Init()
+    public async Task Init()
     {
+        m_logger.LogDebug("Initializing Users");
         UnitOfWork uow = m_databaseInterface.ProvisionUnitOfWork();
-        var rootUser = uow.Query<User>().FirstOrDefault(p_x => p_x.IsRoot);
-        if(rootUser == null) CreateRootUser();
         if (m_settingsService.ClientSettings.AutoLogin && m_settingsService.UserSettings.LastLogin != null)
         {
             m_logger.LogDebug("Auto-logging in as user '{@LastLogin}'", m_settingsService.UserSettings.LastLogin);
             CurrentUser = GetUserInfo(m_settingsService.UserSettings.LastLogin.Oid);
-            //m_historyService.AddUserHistory(CurrentUser, "Auto-logged in");
         }
         else
         {
@@ -61,12 +60,14 @@ public class UserService
 
     private User GetUserInfo(int p_oid)
     {
+        m_logger.LogDebug("Getting user info for user with oid '{Oid}'", p_oid);
         var uow = m_databaseInterface.ProvisionUnitOfWork();
         return uow.GetObjectByKey<User>(p_oid);
     }
 
     public async Task AttemptLoginAsync(LoginObject p_loginObject)
     {
+        m_logger.LogDebug("Attempting login for user '{UserName}'", p_loginObject.UserName);
         UnitOfWork uow = m_databaseInterface.ProvisionUnitOfWork();
         var user = uow.Query<User>().FirstOrDefault(p_x => p_x.UserName == p_loginObject.UserName);
         if (user == null)
@@ -93,20 +94,5 @@ public class UserService
             //m_historyService.AddUserHistory(user, "Failed Login");
             throw new InvalidLoginException($"User '{p_loginObject.UserName}' failed to log in");
         }
-    }
-
-    private void CreateRootUser()
-    {
-        UnitOfWork uow = m_databaseInterface.ProvisionUnitOfWork();
-        // ReSharper disable once UnusedVariable
-        var root = new User(uow)
-        {
-            IsRoot = true,
-            UserName = "root",
-            Password = m_encryptionService.GeneratePasswordHash("password", out var salt),
-            PassSalt = salt
-        };
-        uow.CommitChanges();
-        //m_historyService.AddUserHistory(root, "User Created Automatically");
     }
 }

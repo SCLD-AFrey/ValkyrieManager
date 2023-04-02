@@ -46,6 +46,7 @@ public partial class App : Application
         p_services.AddSingleton<EncryptionService>();
         p_services.AddSingleton<UserService>();
         p_services.AddSingleton<HistoryService>();
+        p_services.AddSingleton<TransactionService>();
         
         p_services.AddSingleton<DatabaseInterface>();
         p_services.AddSingleton<DatabaseUtilities>();
@@ -81,24 +82,25 @@ public partial class App : Application
         var registryService = m_appHost.Services.GetRequiredService<RegistryService>();
         registryService.LoadAesKey();
         var fileService = m_appHost.Services.GetRequiredService<FileService>();
-        var settingsService = m_appHost.Services.GetRequiredService<SettingsService>();
-        var userService = m_appHost.Services.GetRequiredService<UserService>();
-        var dataInit = m_appHost.Services.GetRequiredService<DatabaseInit>();
-        var encService = m_appHost.Services.GetRequiredService<EncryptionService>();
-
-        encService.AesKey = registryService.AesKey;
-        
         fileService.CreateDirectories();
-        fileService.InitSettingsFiles();
-        settingsService.LoadSettings();
-        userService.Init();
-        dataInit.Init();
+        
         
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Is(LogEventLevel.Verbose)
             .WriteTo.Sink(new CollectionSink())
             .WriteTo.File(new JsonFormatter(), fileService.LogsFile, retainedFileCountLimit:31)
             .CreateLogger();
+        
+        var settingsService = m_appHost.Services.GetRequiredService<SettingsService>();
+        var userService = m_appHost.Services.GetRequiredService<UserService>();
+        var dataInit = m_appHost.Services.GetRequiredService<DatabaseInit>();
+        var encService = m_appHost.Services.GetRequiredService<EncryptionService>();
+
+        encService.AesKey = registryService.AesKey;
+        await fileService.InitSettingsFiles();
+        await settingsService.LoadSettings();
+        await userService.Init();
+        dataInit.Init();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

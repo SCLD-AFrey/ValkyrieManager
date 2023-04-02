@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
 using BankManager.Models.Settings;
 using Microsoft.Extensions.Logging;
 
@@ -60,9 +61,12 @@ public class FileService
         Directory.CreateDirectory(Path.GetDirectoryName(LogsFile)!);
         m_logger.LogInformation("Creating DatabaseFile... {DatabaseFile}", DatabaseFile);
         Directory.CreateDirectory(Path.GetDirectoryName(DatabaseFile)!);
+        
+        m_logger.LogInformation("Creating Complete");
+        
     }
 
-    public void InitSettingsFiles()
+    public async Task InitSettingsFiles()
     {
         if(!File.Exists(ClientSettingsFile))
         {
@@ -72,7 +76,7 @@ public class FileService
                 AppTitle = "Valkyrie Banking Manager",
                 AutoLogin = false
             });;
-            File.WriteAllText(ClientSettingsFile, jsonString);
+            await File.WriteAllTextAsync(ClientSettingsFile, jsonString);
         }
         if(!File.Exists(UserSettingsFile))
         {
@@ -80,7 +84,7 @@ public class FileService
             m_logger.LogInformation("Create Necessary Files... {Filepath}", UserSettingsFile);
             string jsonString = JsonSerializer.Serialize(settings);;
             //jsonString = m_encryptionService.EncryptString(jsonString);
-            File.WriteAllText(UserSettingsFile, jsonString);
+            await File.WriteAllTextAsync(UserSettingsFile, jsonString);
         }
     }
 }
